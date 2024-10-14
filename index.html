@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherAPI 날씨 정보 가져오기</title>
+</head>
+
+<body>
+  <h1>현재 날씨 정보</h1>
+  <input type="text" id="city" placeholder="도시 이름 입력">
+  <button id="getWeather">날씨 가져오기</button>
+  <div id="weatherInfo"></div>
+
+  <script>
+    const apiKey = '576a63ff0ce5460bab350212241410'; // API 키는 문자열로 감싸야 합니다.
+    const weatherInfo = document.getElementById('weatherInfo');
+    document.getElementById('getWeather').addEventListener('click', function() {
+      const city = document.getElementById('city').value;
+      const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('네트워크 응답이 정상이 아닙니다.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const temp = data.current.temp_c;
+          const humidity = data.current.humidity;
+          const windSpeed = data.current.wind_kph;
+          const weatherDescription = data.current.condition.text;
+          weatherInfo.innerHTML = `
+                        <h2>${data.location.name}의 날씨</h2>
+                        <p>온도: ${temp}°C</p>
+                        <p>습도: ${humidity}%</p>
+                        <p>바람 속도: ${windSpeed} km/h</p>
+                        <p>상태: ${weatherDescription}</p>
+                    `;
+        })
+        .catch(error => {
+          weatherInfo.innerHTML = `<p>${error.message}</p>`;
+        });
+    });
+  </script>
+</body>
+
+</html>
